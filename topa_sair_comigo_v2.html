@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Topa sair comigo? ❤️</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
+body{
+min-height:100vh;overflow:hidden;
+background:linear-gradient(135deg,#ff9a9e,#ff758c,#c471ed);
+display:flex;justify-content:center;align-items:center;color:white;
+}
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:20px}
+.hidden{display:none}
+h1,h2{text-align:center;margin-bottom:20px}
+.buttons{display:flex;gap:20px;position:relative}
+button{
+border:none;border-radius:999px;padding:14px 28px;font-size:1.1rem;
+cursor:pointer;transition:.25s;box-shadow:0 4px 12px rgba(0,0,0,.2)
+}
+#yesBtn{background:white;color:#ff4d6d}
+#noBtn{background:#ff4d6d;color:white;position:fixed}
+form{
+background:rgba(255,255,255,.15);
+backdrop-filter:blur(8px);
+padding:24px;border-radius:20px;max-width:450px;width:100%
+}
+input,textarea{
+width:100%;padding:12px;margin:8px 0 16px;border:none;border-radius:10px
+}
+.heart{
+position:fixed;font-size:24px;pointer-events:none;
+animation:fall linear forwards;
+}
+@keyframes fall{
+from{transform:translateY(-50px)}
+to{transform:translateY(110vh);opacity:0}
+}
+#taunt{
+position:fixed;font-weight:bold;pointer-events:none;
+}
+</style>
+</head>
+<body>
+
+<div id="screen1" class="screen">
+<h1>Topa sair comigo? ❤️</h1>
+<div class="buttons">
+<button id="yesBtn">Sim ❤️</button>
+<button id="noBtn">Não 😢</button>
+</div>
+</div>
+
+<div id="screen2" class="screen hidden">
+<h2>Agora vamos marcar nosso encontro! ❤️</h2>
+<form id="dateForm">
+<label>Data do encontro</label>
+<input type="date" id="date" required>
+
+<label>Restaurante (opcional)</label>
+<input type="text" id="restaurant" placeholder="Tem algum restaurante em mente? 🍝">
+
+<label>Mensagem opcional</label>
+<textarea id="message" placeholder="Estou ansiosa(o) para esse encontro ❤️"></textarea>
+
+<button type="submit">Confirmar Encontro 💖</button>
+</form>
+</div>
+
+<div id="screen3" class="screen hidden">
+<h1>Perfeito! Nosso encontro está oficialmente marcado! ❤️✨</h1>
+<div id="summary"></div>
+</div>
+
+<script>
+const noBtn=document.getElementById('noBtn');
+const yesBtn=document.getElementById('yesBtn');
+let scale=1;
+
+function moveNo(){
+ const maxX=window.innerWidth-noBtn.offsetWidth-20;
+ const maxY=window.innerHeight-noBtn.offsetHeight-20;
+ noBtn.style.left=Math.random()*maxX+'px';
+ noBtn.style.top=Math.random()*maxY+'px';
+
+ scale=Math.max(0.15, scale-0.05);
+ noBtn.style.transform=`scale(${scale})`;
+
+ if(Math.random() < 0.25){
+ const msgs=["Quase! 😂","Nem tenta 😜","Resposta errada 😆"];
+ const t=document.createElement('div');
+ t.id='taunt';
+ t.innerText=msgs[Math.floor(Math.random()*msgs.length)];
+ t.style.left=(Math.random()*80+10)+'vw';
+ t.style.top=(Math.random()*80+10)+'vh';
+ document.body.appendChild(t);
+ setTimeout(()=>t.remove(),800);
+ }
+}
+
+noBtn.style.left='55%';
+noBtn.style.top='55%';
+
+document.addEventListener('mousemove',e=>{
+ const r=noBtn.getBoundingClientRect();
+ const cx=r.left+r.width/2;
+ const cy=r.top+r.height/2;
+ const d=Math.hypot(e.clientX-cx,e.clientY-cy);
+ if(d<120) moveNo();
+});
+noBtn.addEventListener('mouseenter',moveNo);
+noBtn.addEventListener('click',e=>{e.preventDefault();moveNo();});
+
+function hearts(n=30){
+ for(let i=0;i<n;i++){
+  const h=document.createElement('div');
+  h.className='heart';
+  h.innerHTML=['❤️','💖','💕','💘'][Math.floor(Math.random()*4)];
+  h.style.left=Math.random()*100+'vw';
+  h.style.animationDuration=(3+Math.random()*3)+'s';
+  document.body.appendChild(h);
+  setTimeout(()=>h.remove(),6000);
+ }
+}
+
+yesBtn.onclick=()=>{
+ hearts(60);
+ const msg=document.createElement('h2');
+ msg.innerHTML='Sabia que você ia aceitar! ❤️🥰';
+ document.getElementById('screen1').appendChild(msg);
+
+ setTimeout(()=>{
+   document.getElementById('screen1').classList.add('hidden');
+   document.getElementById('screen2').classList.remove('hidden');
+ },2000);
+};
+
+document.getElementById('dateForm').onsubmit=(e)=>{
+ e.preventDefault();
+ document.getElementById('screen2').classList.add('hidden');
+ document.getElementById('screen3').classList.remove('hidden');
+
+ const d=document.getElementById('date').value;
+ const r=document.getElementById('restaurant').value || 'Não informado';
+ const m=document.getElementById('message').value || 'Nenhuma mensagem';
+
+ document.getElementById('summary').innerHTML=`
+ <p><strong>Data:</strong> ${d}</p><br>
+ <p><strong>Restaurante:</strong> ${r}</p><br>
+ <p><strong>Mensagem:</strong> ${m}</p>`;
+
+ hearts(80);
+};
+</script>
+</body>
+</html>
